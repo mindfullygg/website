@@ -1,0 +1,345 @@
+{
+  "role": "nova",
+  "alias": "nova-onboard",
+  "promptStyle": "welcome",
+  "contract": "none",
+  "_comment": [
+    "Nothing parses this role's output, so there is no classification contract.",
+    "What IS enforced is that the reply can be sent to a member unchanged:",
+    "processNewMember hands it straight to sendWelcome, which DMs it.",
+    "",
+    "Each case asserts in three directions:",
+    "  excludes    — phrases meaning the Mind talked ABOUT the welcome",
+    "  containsAny — proof it actually used the context it was given",
+    "  maxChars    — a DM welcome must not be a wall of text",
+    "contains / containsAny / excludes are all case-insensitive.",
+    "",
+    "PLATFORM SHAPE MATTERS. On Telegram a community is ONE chat and `channel`",
+    "is the group title — there are no channels to recommend. On Discord",
+    "`channel` is a real channel name and there are many. The demo-* case below",
+    "is Telegram-shaped; the rest are Discord-shaped. A Mind that has seen a lot",
+    "of Discord welcomes will invent #general on Telegram, which is why the",
+    "demo case excludes channel names explicitly.",
+    "",
+    "LANGUAGE. `language` on a case (or on the fixture, as a default) is the",
+    "BCP-47 tag CommunityBinding.language supplies in production. Omit it to",
+    "test the inference fallback — which is what any community that never set",
+    "one actually gets. language-* below covers both, and the conflict case is",
+    "the one that matters: a stated language must beat an inferred one.",
+    "",
+    "PLAIN TEXT. Every case excludes HTML and markdown markers. The first live",
+    "run came back wrapped in <p> tags — which a Telegram member would have read",
+    "as literal characters, since sendWelcome passes the reply through unchanged",
+    "with no parse_mode. Nothing caught it, so now everything does."
+  ],
+  "cases": [
+    {
+      "id": "demo-telegram-trading",
+      "displayName": "Marco T.",
+      "language": "en",
+      "culturalContext": "Small Telegram trading group, one chat, no separate channels. Members are blunt and jokey with each other — sharp remarks about someone's trade are normal and not treated as attacks. Promotion, referral links and 'DM me' offers are a hard rule set by the creator and removed on sight. No established customs or rituals yet; the group is a few weeks old. Confidence: 0.75",
+      "activityContext": "One group chat, steady traffic through the European afternoon and quiet overnight. No channel list — Telegram groups have a single chat. Nothing is currently flagged or unhealthy.",
+      "ambassadorContext": "Two members with standing, both active this week: Ivan (answers newcomers' questions, been here since the start), Otlom (posts most of the chart analysis). No other member is above trust 60 yet.",
+      "expect": {
+        "containsAny": [
+          "Ivan",
+          "Otlom"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "here is a welcome",
+          "welcome message:",
+          "as the community guide",
+          "let me know if",
+          "approach",
+          "#general",
+          "#trading",
+          "#introductions",
+          "#announcements",
+          "#support",
+          "channels",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 600
+      }
+    },
+    {
+      "id": "established-crypto-community",
+      "displayName": "0xNewcomer",
+      "culturalContext": "Fast-moving trading community. Blunt, jokey, heavy slang. Members say 'gm' each morning in #general — it is a running custom. Long messages get buried. Confidence: 0.9",
+      "activityContext": "#trading is busiest right now. #general steady. #introductions quiet but read. #announcements is read-only.",
+      "ambassadorContext": "Ambassadors (trust 80+), both active today: OGBuilder (helps newcomers, posts daily), ChartWitch (technical analysis, very responsive).",
+      "expect": {
+        "contains": [
+          "#trading",
+          "gm"
+        ],
+        "containsAny": [
+          "OGBuilder",
+          "ChartWitch"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "here is a welcome",
+          "welcome message:",
+          "approach a",
+          "approach b",
+          "approach d",
+          "as the community guide",
+          "i have crafted",
+          "let me know if",
+          "#announcements",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "cold-start-nothing-known",
+      "displayName": "FirstMember",
+      "culturalContext": "No norms observed yet — this community was created today and has no message history. Confidence: 0.1",
+      "activityContext": "No activity data yet. Channels present: #general.",
+      "ambassadorContext": "No members with a trust score above 50 yet. No ambassadors.",
+      "expect": {
+        "contains": [
+          "#general"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "here is a welcome",
+          "welcome message:",
+          "approach",
+          "#trading",
+          "#introductions",
+          "#showcase",
+          "ogbuilder",
+          "every friday",
+          "our weekly",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 450
+      }
+    },
+    {
+      "id": "cold-start-no-ambassadors",
+      "displayName": "Quiet Arrival",
+      "culturalContext": "Small research-focused community. Formal, careful tone. No inside jokes or customs observed. Confidence: 0.4",
+      "activityContext": "#papers had 3 messages this week. #general had 1.",
+      "ambassadorContext": "No ambassadors identified. The only members above trust 60 have not posted in over a month.",
+      "expect": {
+        "containsAny": [
+          "#papers",
+          "#general"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "gm ",
+          "degen",
+          "let me know if",
+          "**",
+          "##",
+          "&#",
+          "&amp;",
+          "no ambassadors",
+          "arent standing",
+          "no regulars",
+          "not enough",
+          "approach"
+        ],
+        "maxChars": 560
+      }
+    },
+    {
+      "id": "art-community-different-tone",
+      "displayName": "inkandpixel",
+      "culturalContext": "Digital art community. Supportive but honest critique. 'Feedback Friday' in #critique is a weekly tradition. Tone is warm and unhurried, not hype-driven. Confidence: 0.85",
+      "activityContext": "#showcase busiest. #critique spikes on Fridays. #wip steady.",
+      "ambassadorContext": "Ambassadors, both active this week: ArtMentor (gives detailed critique), pixel_sara (runs Feedback Friday).",
+      "expect": {
+        "containsAny": [
+          "ArtMentor",
+          "pixel_sara"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "approach",
+          "gm ",
+          "alpha",
+          "degen",
+          "wagmi",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "spanish-community-welcome",
+      "displayName": "Lucía",
+      "culturalContext": "Comunidad hispanohablante de desarrolladores. Tono cercano y colaborativo. Los viernes se comparte lo que cada uno construyó esa semana en #proyectos. Confidence: 0.9",
+      "activityContext": "#general es el canal más activo. #proyectos se anima los viernes. #ayuda tiene poco tráfico pero se responde rápido.",
+      "ambassadorContext": "Embajadores activos esta semana: dev_carmen (responde dudas de principiantes), tomas_dev (mantiene la documentación).",
+      "expect": {
+        "containsAny": [
+          "#general",
+          "#proyectos",
+          "#ayuda"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "approach",
+          "welcome to",
+          "feel free to",
+          "we're glad you",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "fast-community-must-be-short",
+      "displayName": "SpeedRunner",
+      "culturalContext": "Fast-moving gaming community. Short messages dominate; long ones get ignored entirely. High energy, memes are the primary form of communication. Confidence: 0.9",
+      "activityContext": "Every channel is very active. #general had 50+ messages in the past hour.",
+      "ambassadorContext": "Ambassador active right now: ProGamer.",
+      "expect": {
+        "containsAny": [
+          "#general"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "approach",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 320
+      }
+    },
+    {
+      "id": "inactive-ambassador-not-named",
+      "displayName": "FreshFace",
+      "culturalContext": "Casual crypto community. 'gm' is the standard greeting. Confidence: 0.85",
+      "activityContext": "#general is active.",
+      "ambassadorContext": "OGBuilder (trust 88) — last active 12 days ago, appears INACTIVE. CryptoQueen (trust 92) — active today.",
+      "expect": {
+        "contains": [
+          "CryptoQueen"
+        ],
+        "excludes": [
+          "OGBuilder",
+          "here's a welcome",
+          "welcome message:",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "unhealthy-channel-avoided",
+      "displayName": "SafeUser",
+      "culturalContext": "Casual crypto community. #trading is normally the flagship channel. Confidence: 0.85",
+      "activityContext": "#general active and healthy. #support active and healthy. #trading is FLAGGED — sentiment dropped 40% today, multiple heated arguments ongoing; not a good place for a newcomer right now.",
+      "ambassadorContext": "CryptoQueen — active in #support today.",
+      "expect": {
+        "containsAny": [
+          "#general",
+          "#support"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "**",
+          "##",
+          "&#",
+          "&amp;",
+          "sentiment",
+          "40%",
+          "flagged"
+        ],
+        "maxChars": 700,
+        "contains": [
+          "#trading"
+        ]
+      }
+    },
+    {
+      "id": "language-explicit-beats-inference",
+      "displayName": "Sofia",
+      "language": "es",
+      "culturalContext": "Small Spanish-speaking trading group, but these culture notes were written in English by the creator. Members are direct and informal with each other. No customs recorded yet. Confidence: 0.7",
+      "activityContext": "One group chat, busiest in the evening. No separate channels.",
+      "ambassadorContext": "One member with standing, active this week: Nuria (answers newcomers' questions).",
+      "expect": {
+        "containsAny": [
+          "Nuria"
+        ],
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "approach",
+          "#general",
+          "channels",
+          "welcome to the",
+          "feel free to",
+          "we're glad you",
+          "hope you enjoy",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 500
+      }
+    },
+    {
+      "id": "language-explicit-non-obvious",
+      "displayName": "Thiago",
+      "language": "pt-BR",
+      "culturalContext": "Community notes are in English. Relaxed, friendly group that shares side projects. No customs recorded yet. Confidence: 0.6",
+      "activityContext": "One group chat. Steady traffic.",
+      "ambassadorContext": "No ambassadors yet — the group is new.",
+      "expect": {
+        "excludes": [
+          "here's a welcome",
+          "welcome message:",
+          "approach",
+          "#general",
+          "channels",
+          "welcome to the",
+          "feel free to",
+          "we're glad you",
+          "hope you enjoy",
+          "Nuria",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "maxChars": 450
+      }
+    }
+  ]
+}
