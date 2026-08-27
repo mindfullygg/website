@@ -1,0 +1,19 @@
+# Skill bodies are withheld from the public repo. Everything else in this
+# folder — contracts, fixtures, reports, methodology — is committed.
+*/SKILL.md
+
+# Raw Mind replies from live eval runs. Generated, and they contain the Skill's
+# actual output.
+*/.runs/
+
+# Generated from `--dry`. Regenerate on demand; committing it recreates the
+# stale-prompt problem it exists to solve.
+*/prompts.txt
+
+# Build requests sent to a Mind. They quote the Skill body in full, so they are
+# the Skill body wearing a different filename.
+*/email-*
+
+*/report.md
+*/critical.md
+*/learnings.md
