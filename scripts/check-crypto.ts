@@ -1,5 +1,5 @@
 // ============================================================
-// vigils.gg — verify ENCRYPTION_KEY
+// mindfully.gg — verify ENCRYPTION_KEY
 //
 //   npx tsx --env-file=.env.local scripts/check-crypto.ts
 //
