@@ -345,7 +345,10 @@ export async function purgeForMember(
     // ids removed, or a later purge of that community would work from a list
     // of packets that no longer exist.
     await deletePackets(ids, [memberKey]);
-    await redis().del(memberKey);
+    // The cached trust reading is member-identifying and keyed the same way, so
+    // it goes with them. A purge that left it behind would answer an erasure
+    // request incompletely.
+    await redis().del(memberKey, keys.memberTrust(communityId, authorId));
     return ids.length;
 }
 
