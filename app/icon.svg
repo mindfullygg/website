@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="mindfully.gg">
+<title>mindfully.gg</title>
+<!--
+  Favicon. Deliberately not mark-primary.svg, for two reasons a browser tab
+  makes unavoidable.
+
+  1. It sits on chrome we do not control. The bare mark is a mint ring, which
+     measures about 2:1 on a white tab strip — it washes out in light mode and
+     looks fine in dark. The tile fixes the background so the icon is the same
+     object in both.
+  2. It renders at 16px. mark-primary's stroke of 4 lands at 1px there and the
+     nodes at just over 2; scaled into a padded tile they would be thinner
+     still. Stroke 7 and r6 at 0.72 scale keep the ring and the five nodes
+     separable at tab size.
+
+  Same geometry, same palette, heavier hand. The deep green is the lockup's
+  #04342C, so the icon is the one place the brand's dark actually gets used.
+-->
+<rect width="64" height="64" rx="14" fill="#04342C"/>
+<g transform="translate(32,32) scale(0.72) translate(-32,-32)">
+<path d="M28.1 50.07 A18.0 18.0 0 1 1 35.9 50.07" stroke="#5DCAA5" stroke-width="7" stroke-linecap="round" fill="none"/>
+<circle cx="32.0" cy="14.5" r="6" fill="#A7E8CE"/>
+<circle cx="49.12" cy="26.94" r="6" fill="#A7E8CE"/>
+<circle cx="42.58" cy="47.06" r="6" fill="#A7E8CE"/>
+<circle cx="21.42" cy="47.06" r="6" fill="#A7E8CE"/>
+<circle cx="14.88" cy="26.94" r="6" fill="#A7E8CE"/>
+</g>
+</svg>
