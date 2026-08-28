@@ -15,6 +15,7 @@ import {
 import { decrypt, encrypt } from "@/lib/crypto";
 import { keys, redis } from "@/lib/kv";
 import { purgeForAccount, purgeForCommunity } from "@/lib/escalations";
+import { purgeDigests } from "@/lib/health-digest";
 
 /**
  * Connect (or re-connect) a creator's Builder API key to their account.
@@ -172,6 +173,32 @@ export async function bindCommunity(
 }
 
 /**
+ * Community ids as they come back out of a Redis set, coerced to the strings
+ * they are declared to be.
+ *
+ * The Upstash client JSON-parses every set member, so a Telegram chat id like
+ * `-1004395595935` returns as the **number** -1004395595935 while the type says
+ * `string`. Nothing complains: `keys.community(id)` interpolates either into the
+ * same key, so reads keep working, and React renders a number as happily as a
+ * string. It surfaces much further away, as `===` against a real string
+ * returning false and `.trim()` throwing — which is how it broke unbinding and
+ * saving an edit, both of them silently.
+ *
+ * `String()` is lossless here, verified against Upstash rather than assumed: a
+ * 19-digit Discord snowflake exceeds `Number.MAX_SAFE_INTEGER`, and the client
+ * leaves values it cannot hold exactly as strings. Only ids that fit safely are
+ * parsed, and those convert back digit-for-digit.
+ *
+ * Coerced here, at the one boundary where ids re-enter untyped, rather than at
+ * each comparison. The other sets are safe by their contents — Clerk ids
+ * (`user_…`) and UUIDs never parse as numbers — but this set holds raw platform
+ * chat ids, so it is the one that needs it.
+ */
+function communityIds(members: unknown[]): string[] {
+    return members.map(String);
+}
+
+/**
  * List the communities an account has bound. Prunes reverse-index entries
  * whose forward pointer has been removed or reassigned.
  */
@@ -187,7 +214,9 @@ export async function listCommunities(
     }[]
 > {
     const kv = redis();
-    const ids = await kv.smembers(keys.accountCommunities(clerkUserId));
+    const ids = communityIds(
+        await kv.smembers(keys.accountCommunities(clerkUserId))
+    );
     if (ids.length === 0) return [];
 
     const bindings = await kv.mget<(CommunityBinding | null)[]>(
@@ -281,8 +310,8 @@ export async function unbindCommunity(
 
 /**
  * Disconnect a creator's account: removes the stored key, role map, every
- * community binding (both the pointers and the reverse index), and every
- * escalation the account owns.
+ * community binding (both the pointers and the reverse index), every
+ * escalation the account owns, and its stored health digests.
  *
  * Both purges run, not just the account one. `purgeForAccount` works from the
  * pending and resolved sorted sets, so an escalation whose packet has expired
@@ -298,17 +327,24 @@ export async function unbindCommunity(
  */
 export async function disconnectAccount(clerkUserId: string): Promise<void> {
     const kv = redis();
-    const communityIds = await kv.smembers<string[]>(
-        keys.accountCommunities(clerkUserId)
+    // Coerced for the same reason as `listCommunities` — these ids are passed
+    // to `purgeForCommunity`, which compares them.
+    const ids = communityIds(
+        await kv.smembers(keys.accountCommunities(clerkUserId))
     );
 
-    for (const id of communityIds) {
+    for (const id of ids) {
         await purgeForCommunity(id);
     }
     await purgeForAccount(clerkUserId);
+    // Digests are Vigil prose about this creator's community. They carry a
+    // 30-day TTL, which is a retention control and not a substitute for
+    // erasure — the account is unreachable after this, so anything left would
+    // be orphaned text sitting in Redis until it aged out.
+    await purgeDigests(clerkUserId);
 
     const pipeline = kv.pipeline();
-    for (const id of communityIds) {
+    for (const id of ids) {
         pipeline.del(keys.community(id));
     }
     pipeline.del(keys.accountCommunities(clerkUserId));
