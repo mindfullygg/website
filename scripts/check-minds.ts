@@ -72,7 +72,14 @@ async function main() {
             cognition = null;
         }
 
-        // Cognition is the signal that matters. `isEnabled` is reported.
+        // `isEnabled` mirrors the online/offline toggle in the Minds dashboard.
+        // Being online carries an ongoing cost, so the working practice is to
+        // bring a Mind online for a run and put it back offline afterwards.
+        //
+        // Reported, never counted toward "can answer a call": whether an
+        // OFFLINE Mind replies has not actually been tested — every successful
+        // run so far was made with the Mind online. Do not assume either way.
+        // Cognition is the signal this script is confident about.
         const funded = (cognition ?? 0) > 0;
         if (funded) usable++;
 

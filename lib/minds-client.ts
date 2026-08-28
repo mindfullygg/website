@@ -510,6 +510,18 @@ export async function provisionSwarm(
 }
 
 /**
+ * The presence ping every Vigil receives. Exported so a fixture references it
+ * rather than transcribing it.
+ *
+ * It asks for something every Skill on this project is told never to give — a
+ * name — because creators bring their own Minds and name them whatever they
+ * like. All four specs resolve that by answering with the role. Worth knowing
+ * before someone reads a status reply and concludes the Skill ignored an
+ * instruction; "Respond with your role" is what we actually want here.
+ */
+export const STATUS_CHECK_PROMPT = "Status check. Respond with your name and role.";
+
+/**
  * Verify that a creator's swarm is operational by pinging each Vigil.
  * All five are pinged in parallel.
  */
@@ -525,7 +537,7 @@ export async function verifySwarm(
                 const response = await queryVigil(
                     creatorApiKey,
                     alias,
-                    "Status check. Respond with your name and role.",
+                    STATUS_CHECK_PROMPT,
                     VIGIL_TIMEOUT_MS
                 );
                 return [name.toLowerCase(), !!response] as const;
