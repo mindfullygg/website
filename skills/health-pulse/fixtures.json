@@ -1,0 +1,366 @@
+{
+  "role": "mira",
+  "alias": "mira-health",
+  "promptStyle": "health-channels",
+  "contract": "none",
+  "maxWords": 200,
+  "cases": [
+    {
+      "id": "channels-cold-start",
+      "displayName": "system",
+      "observed": "This community is a few days old. Almost nothing has been observed yet.",
+      "expect": {
+        "containsAny": [
+          "nothing",
+          "not enough",
+          "too early",
+          "too little",
+          "no observ",
+          "cannot"
+        ],
+        "excludes": [
+          "#general",
+          "#trading",
+          "#introductions",
+          "#announcements",
+          "#support",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Mira"
+        ],
+        "maxChars": 600
+      }
+    },
+    {
+      "id": "telegram-has-no-channels",
+      "displayName": "system",
+      "observed": "Observed: this community is a single Telegram group chat. There are no separate channels. Steady traffic through the European afternoon, quiet overnight.",
+      "expect": {
+        "containsAny": [
+          [
+            "one chat",
+            "single",
+            "no separate",
+            "no channels",
+            "one group"
+          ],
+          [
+            "afternoon",
+            "steady",
+            "overnight",
+            "quiet",
+            "traffic"
+          ]
+        ],
+        "excludes": [
+          "#general",
+          "#trading",
+          "#announcements",
+          "#support",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Mira"
+        ],
+        "maxChars": 600
+      }
+    },
+    {
+      "id": "channels-flags-an-unhealthy-room",
+      "displayName": "system",
+      "observed": "Observed: #general active and healthy. #support active and healthy. #trading has had sentiment drop sharply today with multiple heated arguments ongoing.",
+      "expect": {
+        "contains": [
+          "#trading"
+        ],
+        "containsAny": [
+          [
+            "#general",
+            "#support"
+          ],
+          [
+            "heated",
+            "argument",
+            "rough",
+            "tense",
+            "dispute",
+            "avoid"
+          ]
+        ],
+        "excludes": [
+          "%",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Mira"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "channels-nothing-is-wrong",
+      "displayName": "system",
+      "observed": "Observed: #general active and healthy. #support active and healthy. #showcase quieter than usual but nothing unpleasant. No moderation actions this week.",
+      "expect": {
+        "containsAny": [
+          [
+            "#general",
+            "#support",
+            "#showcase"
+          ],
+          [
+            "healthy",
+            "fine",
+            "no concern",
+            "nothing",
+            "none",
+            "no rooms",
+            "steady"
+          ]
+        ],
+        "excludes": [
+          "#trading",
+          "#announcements",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Mira"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "digest-no-invented-score",
+      "displayName": "system",
+      "promptStyle": "health-digest",
+      "digest": {
+        "members": "2 members seen. 1 joined this week. No trust changes yet.",
+        "culture": "Too little observed to describe norms.",
+        "moderation": "No incidents.",
+        "onboarding": "1 member welcomed."
+      },
+      "expect": {
+        "containsAny": [
+          "not enough",
+          "too early",
+          "too little",
+          "insufficient",
+          "no meaningful",
+          "cannot",
+          "no score"
+        ],
+        "excludes": [
+          "/100",
+          "out of 100",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Vera",
+          "Sage",
+          "Kira",
+          "Nova",
+          "Mira"
+        ],
+        "maxChars": 700
+      }
+    },
+    {
+      "id": "digest-with-real-data",
+      "displayName": "system",
+      "promptStyle": "health-digest",
+      "digest": {
+        "members": "22 active members, 3 joined this week and all 3 posted. No churn risks surfaced.",
+        "culture": "No norm shifts. Blunt register unchanged, no new vocabulary.",
+        "moderation": "2 incidents, both warnings, neither repeated. No escalations, no overrides.",
+        "onboarding": "3 welcomed, all 3 posted within a day."
+      },
+      "expect": {
+        "containsAny": [
+          [
+            "22",
+            "twenty-two"
+          ],
+          [
+            "warning",
+            "incident"
+          ],
+          [
+            "trend",
+            "alert",
+            "recommend",
+            "watch",
+            "attention",
+            "steady",
+            "healthy"
+          ]
+        ],
+        "excludes": [
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Vera",
+          "Sage",
+          "Kira",
+          "Nova",
+          "Mira"
+        ],
+        "maxChars": 1100
+      }
+    },
+    {
+      "id": "digest-upstream-missing",
+      "displayName": "system",
+      "promptStyle": "health-digest",
+      "digest": {
+        "members": "18 active members, 1 joined this week.",
+        "moderation": "1 incident, a warning, not repeated.",
+        "onboarding": "1 welcomed."
+      },
+      "expect": {
+        "containsAny": [
+          "no data",
+          "not available",
+          "unavailable",
+          "missing",
+          "nothing on",
+          "no culture"
+        ],
+        "excludes": [
+          "[Agent",
+          "timed out",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Vera",
+          "Sage",
+          "Kira",
+          "Nova",
+          "Mira"
+        ],
+        "maxChars": 1000
+      }
+    },
+    {
+      "id": "digest-all-absent",
+      "displayName": "system",
+      "promptStyle": "health-digest",
+      "expect": {
+        "containsAny": [
+          "no data",
+          "not available",
+          "unavailable",
+          "missing",
+          "nothing",
+          "not enough",
+          "cannot"
+        ],
+        "excludes": [
+          "/100",
+          "out of 100",
+          "[Agent",
+          "timed out",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Vera",
+          "Sage",
+          "Kira",
+          "Nova",
+          "Mira"
+        ],
+        "maxChars": 600
+      }
+    },
+    {
+      "id": "digest-does-not-name-the-roles",
+      "displayName": "system",
+      "promptStyle": "health-digest",
+      "digest": {
+        "members": "12 active members, 2 joined. One member's score fell from 50 to 45 after a warning.",
+        "culture": "No norm shifts observed.",
+        "moderation": "1 warning issued, no escalations.",
+        "onboarding": "2 welcomed, both posted."
+      },
+      "expect": {
+        "containsAny": [
+          [
+            "trust",
+            "member",
+            "score"
+          ],
+          [
+            "moderation",
+            "warning",
+            "onboarding",
+            "welcomed"
+          ]
+        ],
+        "excludes": [
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Vera",
+          "Sage",
+          "Kira",
+          "Nova",
+          "Mira",
+          "Mastermind"
+        ],
+        "maxChars": 1000
+      }
+    },
+    {
+      "id": "status-check",
+      "displayName": "system",
+      "promptStyle": "status",
+      "expect": {
+        "containsAny": [
+          "health",
+          "activity"
+        ],
+        "excludes": [
+          "Name:",
+          "Role:",
+          "@",
+          "**",
+          "##",
+          "&#",
+          "&amp;"
+        ],
+        "excludesWord": [
+          "Mira",
+          "Mastermind"
+        ],
+        "maxChars": 300
+      }
+    }
+  ]
+}
