@@ -49,10 +49,19 @@ export const PRIMARY_CTA_HREF = "/dashboard";
  */
 export const PRIMARY_CTA_LABEL = "Set up your Keepers";
 
+/**
+ * Three destinations, three pages — no in-page anchors.
+ *
+ * "Platform" and "Built for" pointed at `/#platform` and `/#built-for`, which
+ * meant two of the three entries scrolled you inside the page you were already
+ * on, and did nothing recognisable from `/keepers`. The nav now names the three
+ * pages that exist, which is also how `/how-it-works` becomes reachable at all
+ * — nothing linked to it, and the footer no longer carries link columns.
+ */
 const NAV_LINKS = [
-    { href: "/#platform", label: "Platform" },
+    { href: "/", label: "Home" },
     { href: "/keepers", label: "The Keepers" },
-    { href: "/#built-for", label: "Built for" },
+    { href: "/how-it-works", label: "How it works" },
 ];
 
 // The mark lives in components/brand-mark.tsx so the dashboard sidebar can use

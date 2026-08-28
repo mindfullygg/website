@@ -61,7 +61,7 @@ const PLATFORM_ICONS: Record<string, LucideIcon> = {
 export default function Home() {
     return (
         <div className="min-h-screen bg-zinc-950 text-zinc-100">
-            <SiteNav />
+            <SiteNav current="Home" />
 
             {/* ---------- 1. HERO ---------- */}
             <section className="pt-24 text-center">
