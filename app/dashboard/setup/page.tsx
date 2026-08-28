@@ -782,6 +782,50 @@ export default function SetupPage() {
                             </div>
                         )}
 
+                        {/* `result` is the report from one `handleAssign` call and
+                            is never persisted, so it is gone after a reload. The
+                            step chips stay clickable once setup is complete, and
+                            clicking "Verify" without a run in memory used to fall
+                            through both conditions below — leaving the panel's
+                            border and padding wrapped around nothing, which reads
+                            as broken rather than as empty.
+
+                            No re-run button here on purpose. The re-provision
+                            action already exists on the assign step, and it pings
+                            all five Minds and spends cognition; a second entry
+                            point would mean two places to start a costly job and
+                            the same warning printed twice. */}
+                        {step === 2 && !result && (
+                            <div className="max-w-2xl">
+                                <h2 className="text-xl font-semibold mb-2">
+                                    Nothing to verify from this session
+                                </h2>
+                                <p className="text-zinc-300 mb-4">
+                                    This step reports the equip run that provisioned
+                                    your swarm. That report isn&apos;t stored — it
+                                    exists only while the page is open, so arriving
+                                    here after a reload starts without one.
+                                </p>
+                                <p className="text-zinc-300 mb-6">
+                                    Live status is in the checklist above, and
+                                    per-Mind detail lives on{" "}
+                                    <Link
+                                        href="/dashboard/swarm"
+                                        className="text-zinc-100 underline underline-offset-4 hover:text-white"
+                                    >
+                                        Swarm
+                                    </Link>
+                                    .
+                                </p>
+                                <button
+                                    onClick={() => setStep(1)}
+                                    className="px-6 py-2.5 bg-zinc-800 text-zinc-300 rounded-lg font-medium hover:bg-zinc-700 transition-colors"
+                                >
+                                    Back to Assign Minds
+                                </button>
+                            </div>
+                        )}
+
                         {step === 2 && result && (
                             <div>
                                 <h2 className="text-xl font-semibold mb-2">Swarm ready</h2>
