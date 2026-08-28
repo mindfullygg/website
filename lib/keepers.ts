@@ -1,4 +1,5 @@
 import { VIGILS, type VigilName } from "@/types";
+import { skillsForRole } from "@/lib/skills-config";
 
 /**
  * Marketing copy for the five Keepers — copy v3, the shipping version.
@@ -45,6 +46,15 @@ export interface KeeperContent {
      * needing the short form takes the first sentence of this.
      */
     description: string;
+    /**
+     * Etymology — "Slavic", "faith, truth". **Currently rendered nowhere.**
+     *
+     * These sat under each name on the Keepers page until that line was cut.
+     * Kept on purpose rather than deleted, but flagged here because nothing else
+     * will flag them: an unused interface field is still "used" as far as
+     * TypeScript and ESLint are concerned, so it looks deliberate forever. If a
+     * surface for the names' meanings never appears, delete both.
+     */
     origin: string;
     meaning: string;
     /**
@@ -206,6 +216,38 @@ export const KEEPERS: Record<VigilName, KeeperContent> = {
         skill: "Mindfully_Community_Guide",
     },
 };
+
+/**
+ * The Bazaar page for a Keeper's published Skill, or `null` if the role has
+ * none yet.
+ *
+ * The id comes from `VIGIL_SKILL_IDS`, which is what `provisionSwarm` actually
+ * equips — **not** a second copy pasted in here. CLAUDE.md is explicit that a
+ * Skill's description cannot be edited after publication and the correction
+ * path is "republish under a new id and one line in `lib/skills-config.ts`";
+ * with the id duplicated, that one line would leave this link pointing at the
+ * withdrawn Skill.
+ *
+ * `skillsForRole` returns a list because a role may equip more than one. The
+ * first is the role's own Skill and the one worth linking; the rest, if they
+ * ever exist, are supporting and have no place on a marketing page.
+ */
+export function skillUrl(name: VigilName): string | null {
+    const [id] = skillsForRole(name);
+    return id ? `https://ethoswarm.ai/bazaar/skills/${id}` : null;
+}
+
+/**
+ * "Mindfully Trust Keeper" — the Skill's name as a reader should see it.
+ *
+ * `skill` stores the underscored form because that is the Skill's real name on
+ * the Bazaar, the string `bazaar.listSkills({ search: "Mindfully" })` matches.
+ * Spacing it is a display concern, so it happens here rather than by loosening
+ * the stored value.
+ */
+export function skillLabel(name: VigilName): string {
+    return KEEPERS[name].skill.replace(/_/g, " ");
+}
 
 /**
  * "What Vera tracks", "What Sage learns" — the heading over a Keeper's list.
