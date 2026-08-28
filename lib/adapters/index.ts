@@ -24,6 +24,7 @@ import {
 import { createEscalation } from "@/lib/escalations";
 import { sanitizeDisplayName } from "@/lib/validate";
 import { isVigilFailure } from "@/lib/minds-client";
+import { toPlainText } from "@/lib/normalize";
 import { getRestAdapter } from "./rest";
 import { recordSwarmEvent, recordWelcome } from "@/lib/swarm-metrics";
 
@@ -197,8 +198,14 @@ export async function processMessage(
                 suggestedAction: result.decision.action,
                 confidence: result.decision.confidence,
                 reasoning: result.decision.reasoning,
-                veraContext: result.veraContext,
-                sageContext: result.sageContext,
+                // Minds return `<p>` and `<br>` whatever the prompt asks, and
+                // these two are rendered on the escalation card. The parsers
+                // normalise on the way in for the same reason; nothing was
+                // doing it for the display-only fields, so the card would have
+                // shown the tags. `reasoning` arrives already normalised via
+                // `parseKiraDecision`.
+                veraContext: toPlainText(result.veraContext),
+                sageContext: toPlainText(result.sageContext),
                 trustScore,
             });
             executed = true;
