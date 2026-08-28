@@ -42,11 +42,42 @@ export const keys = {
         `swarm:calls:${clerkUserId}:${stamp}`,
     /** Capped list of recent swarm activity. Display only, no member content. */
     swarmFeed: (clerkUserId: string) => `swarm:feed:${clerkUserId}`,
+    /** Welcomes delivered, all time. Deliberately no TTL — unlike the hourly
+     *  buckets, this is a lifetime figure a creator watches grow. */
+    welcomesTotal: (clerkUserId: string) => `swarm:welcomes:${clerkUserId}`,
+    /** Welcomes delivered on one day. `day` is YYYYMMDD. Expires at 31 days,
+     *  which is the longest window the page offers plus a day of slack. An
+     *  aggregate count, so nothing here identifies a member. */
+    welcomesDay: (clerkUserId: string, day: string) =>
+        `swarm:welcomes:${clerkUserId}:${day}`,
+    /** The last trust reading a creator asked for about one member, so the
+     *  Members page survives a refresh without re-billing a call.
+     *
+     *  Member-identifying, and keyed by community + author precisely so
+     *  `purgeForMember` can erase it alongside the escalations. Expires at 30
+     *  days — the shortest window any member data here gets. It is a
+     *  convenience cache, not a record: the authoritative profile lives in the
+     *  trust keeper's memory and cannot be reached from this side at all. */
+    memberTrust: (communityId: string, authorId: string) =>
+        `member:trust:${communityId}:${authorId}`,
     /** Reverse index: the set of community ids an account has bound. */
     accountCommunities: (clerkUserId: string) =>
         `account_communities:${clerkUserId}`,
     /** Set of connected account ids, for listAccounts (digest cron, admin). */
     accountsIndex: "accounts:index",
+
+    /** Recent daily health digests for one creator, newest first.
+     *
+     *  A capped list rather than a single latest-only key, because the second
+     *  entry is load bearing: it is fed back into the next digest prompt so the
+     *  health role can compare periods from what it was *given* rather than
+     *  from memory. Its Skill forbids recalling a figure it did not read.
+     *
+     *  Vigil prose, so treat it as it were member-adjacent even though it
+     *  should only ever hold aggregates — it is a language model summarising
+     *  four other language models, and nothing guarantees it never names
+     *  someone. TTL'd accordingly; see DIGEST_TTL_SECONDS. */
+    healthDigests: (clerkUserId: string) => `health:digests:${clerkUserId}`,
 
     // --- Escalations ---
     // One packet per key, plus four indexes over it. Pending and resolved are
