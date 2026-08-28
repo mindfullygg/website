@@ -24,10 +24,14 @@ export interface VigilInfo {
     /**
      * One line on what the role does, shown under its name in the dashboard.
      *
-     * **No pronouns.** These read "She knows who everyone really is" and so on,
-     * which assigns a gender to a Mind the creator brings and names themselves.
-     * Same error as hardcoding "Vera": it describes ours, not theirs. A verb
-     * phrase with no subject is both accurate and shorter.
+     * **No pronouns, and one line.** These read "She knows who everyone really
+     * is" and so on, which assigns a gender to a Mind the creator brings and
+     * names themselves — the same error as hardcoding "Vera": it describes
+     * ours, not theirs. A verb phrase with no subject is accurate and shorter.
+     *
+     * Short enough to sit on one line in a card, too. Three of the five wrapped,
+     * and a wrapped tagline pushes its card taller than the others in a row of
+     * five.
      */
     tagline: string;
     /**
@@ -71,17 +75,22 @@ export const VIGILS: Record<VigilName, VigilInfo> = {
         alias: VIGIL_ALIASES.VERA,
         displayName: "Vera",
         role: "Trust Keeper",
-        tagline: "Knows who each member really is",
+        tagline: "Knows each member",
         color: "#1E3A5F",
         textColor: "#A8D5E2",
-        icon: "Users",
+        // `Users` was two overlapping figures — the densest glyph in the set,
+        // and at 12-19px the heads and bodies merged. It also shared a person
+        // silhouette with the community guide's `UserPlus`, so two of the five
+        // read alike at a glance. A shield is a distinct outline at any size and
+        // says trust rather than people.
+        icon: "ShieldCheck",
     },
     sage: {
         name: "sage",
         alias: VIGIL_ALIASES.SAGE,
         displayName: "Sage",
         role: "Culture Learner",
-        tagline: "Learns what is normal in this community",
+        tagline: "Learns what is normal",
         color: "#1B7A4E",
         textColor: "#5DCAA5",
         icon: "Languages",
@@ -101,7 +110,7 @@ export const VIGILS: Record<VigilName, VigilInfo> = {
         alias: VIGIL_ALIASES.MIRA,
         displayName: "Mira",
         role: "Health Pulse",
-        tagline: "Sees the big picture, not single messages",
+        tagline: "Sees the big picture",
         color: "#5B2E91",
         textColor: "#9B72CF",
         icon: "Activity",
